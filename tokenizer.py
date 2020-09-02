@@ -14,6 +14,10 @@ class Tokenizer:
             self.actual = Token("EOF", '"')
             return
         
+        elif self.origin[self.position].isspace():
+            self.position += 1
+            self.selectNext()
+        
         elif self.origin[self.position].isnumeric():
             tok = ""
             while (self.position < (len(self.origin))) and \
@@ -27,10 +31,6 @@ class Tokenizer:
             self.actual = Token("PLUS", '+')
             self.position += 1
             return
-
-        elif self.origin[self.position].isspace():
-            self.position += 1
-            self.selectNext()
 
         elif self.origin[self.position] == '-':
             self.actual = Token("MINUS", '-')

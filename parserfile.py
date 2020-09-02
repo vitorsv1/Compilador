@@ -38,4 +38,6 @@ class Parser:
     @staticmethod
     def run(code):
         Parser.tokens = Tokenizer(code)
-        return Parser.parseExpression()
+        r = Parser.parseExpression()
+        if Parser.tokens.actual.type == "EOF":
+            return r
