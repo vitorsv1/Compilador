@@ -38,12 +38,12 @@ class Tokenizer:
             return
         
         elif self.origin[self.position] == '*':
-            self.actual = Token("MULTI", '-')
+            self.actual = Token("MULTI", '*')
             self.position += 1
             return
         
         elif self.origin[self.position] == '/':
-            self.actual = Token("DIV", '-')
+            self.actual = Token("DIV", '/')
             self.position += 1
             return
 
