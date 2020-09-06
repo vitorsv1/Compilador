@@ -2,7 +2,7 @@
 
 ### Diagrama Sintático
 
-![alt text](https://github.com/vitorsv1/Compilador/blob/v1.0/diagrama-sintatico-v2.png)
+![alt text](https://github.com/vitorsv1/Compilador/blob/v1.0/diagrama_sintatico-v2.png)
 
 ### EBNF
 
