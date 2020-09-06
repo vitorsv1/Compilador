@@ -55,7 +55,7 @@ class Parser:
     def run(code):
         code = PrePro.filter(code)
         Parser.tokens = Tokenizer(code)
-        r = Parser.parseExpression()
+        r = int(Parser.parseExpression())
         if Parser.tokens.actual.type == "EOF":
             return r
         
