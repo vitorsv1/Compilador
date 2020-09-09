@@ -47,5 +47,15 @@ class Tokenizer:
             self.position += 1
             return
 
+        elif self.origin[self.position] == '(':
+            self.actual = Token("OPEN_P", '(')
+            self.position += 1
+            return
+        
+        elif self.origin[self.position] == ')':
+            self.actual = Token("CLOSE_P", ')')
+            self.position += 1
+            return
+
         else:
             raise NameError("Invalid character")
