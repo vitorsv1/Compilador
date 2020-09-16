@@ -1,5 +1,6 @@
 from tokenizer import Tokenizer
 from prepro import PrePro
+from node import *
 
 class Parser:
     tokens = None
@@ -8,12 +9,10 @@ class Parser:
     def parseExpression():
         result = Parser.parseTerm()
         while Parser.tokens.actual.type == "PLUS" or Parser.tokens.actual.type == "MINUS":
-            if Parser.tokens.actual.type == "PLUS":
+            if Parser.tokens.actual.type == "PLUS" or Parser.tokens.actual.type == "MINUS":
+                result = BinOp(Parser.tokens.actual.value, [result])
                 Parser.tokens.selectNext()
-                result += Parser.parseTerm()
-            elif Parser.tokens.actual.type == "MINUS":
-                Parser.tokens.selectNext()
-                result -= Parser.parseTerm()
+                result.children.append(Parser.parseTerm())
             else:
                 raise NameError(f"Type difference error, actual is {Parser.tokens.actual.type}")
         return result
@@ -22,21 +21,18 @@ class Parser:
     def parseTerm():
         result = Parser.parseFactor()
         while Parser.tokens.actual.type == "MULTI" or Parser.tokens.actual.type == "DIV":
-            if Parser.tokens.actual.type == "MULTI":
+            if Parser.tokens.actual.type == "MULTI" or Parser.tokens.actual.type == "DIV":
+                result = BinOp(Parser.tokens.actual.value, [result])
                 Parser.tokens.selectNext()
-                result = int(result * Parser.parseFactor())
-            elif Parser.tokens.actual.type == "DIV":
-                Parser.tokens.selectNext()
-                result = int(result / Parser.parseFactor())
+                result.children.append(Parser.parseTerm())
             else:
                 raise NameError(f"First type difference error, actual is {Parser.tokens.actual.type}")
         return result
 
     @staticmethod
     def parseFactor():
-        res = 0
         if Parser.tokens.actual.type == "INT":
-            res = int(Parser.tokens.actual.value)
+            res = IntVal(Parser.tokens.actual.value)
             Parser.tokens.selectNext()
 
         elif Parser.tokens.actual.type == "OPEN_P":
@@ -48,14 +44,10 @@ class Parser:
             else:
                 raise NameError(f"Syntax error, ( open but not closed in position {Parser.tokens.position} with value {Parser.tokens.actual.value}")
         
-        elif Parser.tokens.actual.type == "MINUS":
+        elif Parser.tokens.actual.type == "MINUS" or Parser.tokens.actual.type == "PLUS":
+            res = UnOp(Parser.tokens.actual.value, [])
             Parser.tokens.selectNext()
-            res -= Parser.parseFactor()
-
-        elif Parser.tokens.actual.type == "PLUS":
-            Parser.tokens.selectNext()
-            res += Parser.parseFactor()
-
+            res.children.append(Parser.parseFactor())
         else:
             raise NameError(f"Syntax error, Token Received was invalid, received type {Parser.tokens.actual.type}")
         return res
@@ -66,7 +58,7 @@ class Parser:
         code = PrePro.filter(code)
         Parser.tokens = Tokenizer(code)
         Parser.tokens.selectNext()
-        r = int(Parser.parseExpression())
+        r = Parser.parseExpression()
         if Parser.tokens.actual.type == "EOF":
             return r
         
