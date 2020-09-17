@@ -24,7 +24,7 @@ class Parser:
             if Parser.tokens.actual.type == "MULTI" or Parser.tokens.actual.type == "DIV":
                 result = BinOp(Parser.tokens.actual.value, [result])
                 Parser.tokens.selectNext()
-                result.children.append(Parser.parseTerm())
+                result.children.append(Parser.parseFactor())
             else:
                 raise NameError(f"First type difference error, actual is {Parser.tokens.actual.type}")
         return result
