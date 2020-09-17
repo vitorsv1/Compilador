@@ -8,7 +8,7 @@ class Node:
 
 class IntVal(Node):
     def __init__(self,value):
-        super().__init__(int(value), None)
+        super().__init__(value, None)
         
     def Evaluate(self):
         return self.value
