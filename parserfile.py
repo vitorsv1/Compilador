@@ -15,7 +15,11 @@ class Parser:
     @staticmethod
     def parseCommand():
         result = None
-        if Parser.tokens.actual.type == "IDENTIFIER":
+        if Parser.tokens.actual.type == "BREAK":
+            if result is None:
+                result = NoOp(Parser.tokens.actual.value)
+        
+        elif Parser.tokens.actual.type == "IDENTIFIER":
             var = Parser.tokens.actual
             Parser.tokens.selectNext()
             if Parser.tokens.actual.type == "EQUAL":
@@ -36,10 +40,6 @@ class Parser:
                     raise NameError(f"Syntax error, '(' open but not closed in position {Parser.tokens.position} with value {Parser.tokens.actual.value}")
             else:
                 raise NameError(f"{Parser.tokens.actual.value} is a reserved word for function println()")
-        
-        if Parser.tokens.actual.type == "BREAK":
-            if result is None:
-                result = NoOp(Parser.tokens.actual.value)
         
         else:
             raise NameError(f"Syntax error for type {Parser.tokens.actual.type} received")
