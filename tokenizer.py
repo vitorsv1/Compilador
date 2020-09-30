@@ -7,6 +7,7 @@ class Tokenizer:
         self.origin = origin
         self.position = 0
         self.actual = None
+        self.keywords = {"PRINT":"println"}
 
     def selectNext(self):
 
@@ -25,6 +26,19 @@ class Tokenizer:
                 tok += self.origin[self.position]
                 self.position += 1
             self.actual = Token("INT", int(tok))
+            return
+
+        elif self.origin[self.position].isalpha():
+            tok = ""
+            while (self.position < (len(self.origin))) and \
+                    (self.origin[self.position].isalpha() or \
+                     self.origin[self.position] == '_' or \
+                     self.origin[self.position].isnumeric()):
+                tok += self.origin[self.position]
+                self.position += 1
+            self.actual = Token("IDENTIFIER", tok)
+            if tok == self.keywords["PRINT"]:
+                self.actual = Token("PRINT", tok)
             return
 
         elif self.origin[self.position] == '+':
@@ -54,6 +68,16 @@ class Tokenizer:
         
         elif self.origin[self.position] == ')':
             self.actual = Token("CLOSE_P", ')')
+            self.position += 1
+            return
+
+        elif self.origin[self.position] == '=':
+            self.actual = Token("EQUAL", '=')
+            self.position += 1
+            return
+        
+        elif self.origin[self.position] == '\n':
+            self.actual = Token("BREAK", '\n')
             self.position += 1
             return
 
