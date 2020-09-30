@@ -1,3 +1,7 @@
+import symtable
+
+table = symtable.SymbolTable()
+
 class Node:
     def __init__(self, value, children):
         self.value = value
@@ -37,10 +41,38 @@ class UnOp(Node):
         elif self.value == "+":
             return self.children[0].Evaluate()
 
-
 class NoOp(Node):
     def __init__(self, value):
         self.value = None
     def Evaluate(self):
         pass  
 
+class Identifier(Node):
+    def __init__(self, value):
+        self.value = value
+    
+    def Evaluate(self):
+        return table.getter(self.value)
+
+class Print(Node):
+    def __init__(self,value,children):
+        super().__init__(value,children)
+    
+    def Evaluate(self):
+        print(self.children[0].Evaluate())
+
+class Assigment(Node):
+    def __init__(self,value,children):
+        super().__init__(value,children)
+    
+    def Evaluate(self):
+        if self.value == "=":
+            table.setter(self.children[0].value,self.children[1].Evaluate())
+
+class Statement(Node):
+    def __init__(self, children):
+        super().__init__(None,children)
+    
+    def Evaluate(self):
+        for child in self.children:
+            child.Evaluate()
