@@ -1,2 +1,3 @@
-1x = 42
-println(1x)
+println(1+1)
+println(21+21)
+println(83-41)
