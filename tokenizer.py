@@ -21,10 +21,11 @@ class Tokenizer:
         
         elif self.origin[self.position].isnumeric():
             tok = ""
-            while (self.position < (len(self.origin))) and \
-                    (self.origin[self.position].isnumeric()):
+            while (self.position < (len(self.origin)) and self.origin[self.position].isnumeric()):
                 tok += self.origin[self.position]
                 self.position += 1
+                if self.origin[self.position].isalpha() or self.origin[self.position] == "_":
+                   raise NameError('Syntaxe incorrect, Number first then Alpha in variable assignment')
             self.actual = Token("INT", int(tok))
             return
 

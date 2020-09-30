@@ -1,3 +1,2 @@
-a=1
-b=1
-println(a+b)
+1x = 42
+println(1x)

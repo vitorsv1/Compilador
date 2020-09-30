@@ -34,10 +34,15 @@ class Parser:
                     Parser.tokens.selectNext()
                 else:
                     raise NameError(f"Syntax error, '(' open but not closed in position {Parser.tokens.position} with value {Parser.tokens.actual.value}")
+            else:
+                raise NameError(f"{Parser.tokens.actual.value} is a reserved word for function println()")
         
         if Parser.tokens.actual.type == "BREAK":
             if result is None:
                 result = NoOp(Parser.tokens.actual.value)
+        
+        else:
+            raise NameError(f"Syntax error for type {Parser.tokens.actual.type} received")
         
         return result
     @staticmethod
