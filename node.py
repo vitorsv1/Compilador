@@ -30,6 +30,14 @@ class BinOp(Node):
             return self.children[0].Evaluate() * self.children[1].Evaluate()
         elif self.value == "/":
             return int(self.children[0].Evaluate() / self.children[1].Evaluate())
+        elif self.value == "&&":
+            return self.children[0].Evaluate() and self.children[1].Evaluate()
+        elif self.value == "||":
+            return self.children[0].Evaluate() or self.children[1].Evaluate()
+        elif self.value == ">":
+            return self.children[0].Evaluate() > self.children[1].Evaluate()
+        elif self.value == "<":
+            return self.children[0].Evaluate() < self.children[1].Evaluate()
 
 class UnOp(Node):
     def __init__(self,value,children):
@@ -40,9 +48,11 @@ class UnOp(Node):
             return - self.children[0].Evaluate()
         elif self.value == "+":
             return self.children[0].Evaluate()
+        elif self.value == "!":
+            return not self.children[0].Evaluate()
 
 class NoOp(Node):
-    def __init__(self, value):
+    def __init__(self):
         self.value = None
     def Evaluate(self):
         pass  
@@ -67,7 +77,7 @@ class Assigment(Node):
     
     def Evaluate(self):
         if self.value == "=":
-            table.setter(self.children[0].value,self.children[1].Evaluate())
+            table.setter(self.children[0].value, self.children[1].Evaluate())
 
 class Statement(Node):
     def __init__(self, children):
@@ -76,3 +86,19 @@ class Statement(Node):
     def Evaluate(self):
         for child in self.children:
             child.Evaluate()
+
+class Readline(Node):
+    def __init__(self):
+        self.value = None
+    
+    def Evaluate(self):
+        return int(input())
+
+class While(Node):
+    def __init__(self, children):
+        super().__init__(None,children)
+    
+    def Evaluate(self):
+        while self.children[0].Evaluate():
+            self.children[1].Evaluate()
+
