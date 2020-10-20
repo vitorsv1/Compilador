@@ -114,10 +114,3 @@ class If(Node):
         else:
             if len(self.children) > 2:
                 return self.children[2].Evaluate()
-
-class Else(Node):
-    def __init__(self, children):
-        super().__init__(None,children)
-
-    def Evaluate(self):
-        return self.children[0].Evaluate()
