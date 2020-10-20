@@ -7,7 +7,8 @@ class Tokenizer:
         self.origin = origin
         self.position = 0
         self.actual = None
-        self.keywords = {"PRINT":"println"}
+        self.keywords = {"println": "PRINT",
+                        "readline": "READLINE", "if": "IF", "else": "ELSE", "elseif": "ELSEIF", "while": "WHILE", "end": "END"}
 
     def selectNext(self):
 
@@ -15,7 +16,7 @@ class Tokenizer:
             self.actual = Token("EOF", '"')
             return
         
-        elif self.origin[self.position].isspace():
+        elif self.origin[self.position] == " ":
             self.position += 1
             self.selectNext()
         
@@ -37,9 +38,11 @@ class Tokenizer:
                      self.origin[self.position].isnumeric()):
                 tok += self.origin[self.position]
                 self.position += 1
-            self.actual = Token("IDENTIFIER", tok)
-            if tok == self.keywords["PRINT"]:
-                self.actual = Token("PRINT", tok)
+          
+            if tok in self.keywords:
+                self.actual = Token(self.keywords[tok], tok)
+            else:
+                self.actual = Token("IDENTIFIER", tok)
             return
 
         elif self.origin[self.position] == '+':
@@ -72,11 +75,50 @@ class Tokenizer:
             self.position += 1
             return
 
-        elif self.origin[self.position] == '=':
-            self.actual = Token("EQUAL", '=')
+        elif self.origin[self.position] == '<':
+            self.actual = Token("MENOR", '<')
             self.position += 1
             return
-        
+
+        elif self.origin[self.position] == '>':
+            self.actual = Token("MAIOR", '>')
+            self.position += 1
+            return
+
+        elif self.origin[self.position] == '|':
+            self.position += 1
+            if(self.position < len(self.origin)):
+                if(self.origin[self.position] == '|'):
+                    self.actual = Token("OR", '||')
+                    self.position += 1
+                    return
+            else:
+                raise NameError("Error in char '|' ")
+
+        elif self.origin[self.position] == '&':
+            self.position += 1
+            if(self.position < len(self.origin)):
+                if(self.origin[self.position] == '&'):
+                    self.actual = Token("AND", '&&')
+                    self.position += 1
+                    return
+            else:
+                raise NameError("Error in char '&' ")
+
+        elif self.origin[self.position] == '!':
+            self.actual = Token("NOT", '!')
+            self.position += 1
+            return
+
+        elif self.origin[self.position] == '=':
+            self.actual = Token("IGUAL", '=')
+            self.position += 1
+            if(self.position < len(self.origin)):
+                if(self.origin[self.position] == '='):
+                    self.actual = Token("IGUAL_I", '==')
+                    self.position += 1
+            return
+
         elif self.origin[self.position] == '\n':
             self.actual = Token("BREAK", '\n')
             self.position += 1
@@ -84,3 +126,5 @@ class Tokenizer:
 
         else:
             raise NameError("Invalid character")
+
+        #print(self.actual.value, self.actual.type)
