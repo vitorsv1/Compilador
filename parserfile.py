@@ -19,7 +19,7 @@ class Parser:
     @staticmethod
     def parseCommand():
         result = None
-
+        
         if Parser.tokens.actual.type == "IDENTIFIER":
             var = Parser.tokens.actual
             Parser.tokens.selectNext()
