@@ -119,8 +119,6 @@ class Tokenizer:
                     self.position += 1
             return
 
-                
-        
         elif self.origin[self.position] == '\n':
             self.actual = Token("BREAK", '\n')
             self.position += 1

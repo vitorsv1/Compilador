@@ -53,7 +53,7 @@ class Parser:
             Parser.tokens.selectNext()
             if Parser.tokens.actual.type == "OPEN_P":
                 Parser.tokens.selectNext()
-                result = Print(Parser.tokens.actual.value, [Parser.parseRelExpression()])
+                result = Print([Parser.parseRelExpression()])
 
                 if Parser.tokens.actual.type == "CLOSE_P":
                     Parser.tokens.selectNext()
@@ -85,6 +85,38 @@ class Parser:
             else:
                 raise NameError(f'Error on BREAK Token expected - {Parser.tokens.actual.value}')
 
+        elif Parser.tokens.actual.type == "IF":
+            Parser.tokens.selectNext()
+            result = If([Parser.parseRelExpression()])
+            
+            if Parser.tokens.actual.type == "BREAK":
+                Parser.tokens.selectNext()
+                result.children.append(Parser.parseBlock())
+
+                if Parser.tokens.actual.type == "END":
+                    Parser.tokens.selectNext()
+                    if Parser.tokens.actual.type == "BREAK":
+                        Parser.tokens.selectNext()
+                    else:
+                        raise NameError(f'Error on BREAK Token expected - {Parser.tokens.actual.value}')
+                elif Parser.tokens.actual.type == "ELSE":
+                    Parser.tokens.selectNext()
+                    if Parser.tokens.actual.type == "BREAK":
+                        Parser.tokens.selectNext()
+                        result.children.append(Parser.parseBlock())
+                        if Parser.tokens.actual.type == "END":
+                            Parser.tokens.selectNext()
+                            if Parser.tokens.actual.type == "BREAK":
+                                Parser.tokens.selectNext()
+                            else:
+                                raise NameError(f'Error on BREAK Token expected - {Parser.tokens.actual.value}')
+                        else:
+                            raise NameError(f'Error on END Token expected - {Parser.tokens.actual.value}')
+                    else:
+                        raise NameError(f'Error on BREAK Token expected - {Parser.tokens.actual.value}')
+            else:
+                raise NameError(f'Error on BREAK Token expected - {Parser.tokens.actual.value}')
+            
         elif Parser.tokens.actual.type == "BREAK":
             Parser.tokens.selectNext()
             if result is None:
