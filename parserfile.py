@@ -48,7 +48,7 @@ class Parser:
                     if Parser.tokens.actual.type == "BREAK":
                         Parser.tokens.selectNext()
                     else:
-                        raise NameError('Error BREAK Token expected')
+                        raise NameError(f'Error BREAK Token expected but got {Parser.tokens.actual.type}')
             else:
                 raise NameError(
                     f"Syntax error for type {Parser.tokens.actual.type} received")
@@ -153,6 +153,18 @@ class Parser:
             Parser.tokens.selectNext()
             if result is None:
                 result = NoOp()
+        
+        elif Parser.tokens.actual.type == "LOCAL":
+            Parser.tokens.selectNext()
+            if Parser.tokens.actual.type == "IDENTIFIER":
+                result = Assigment(None, [Parser.tokens.actual.value, None])
+                Parser.tokens.selectNext()
+                if Parser.tokens.actual.type == "DOIS_PP":
+                    result.value = Parser.tokens.actual.value
+                    Parser.tokens.selectNext()
+                    if Parser.tokens.actual.type == "INT" or Parser.tokens.actual.type == "BOOL" or Parser.tokens.actual.type == "STRING":
+                        result.children[1] = Parser.tokens.actual.type
+                        Parser.tokens.selectNext()
 
         else:
             raise NameError(
@@ -222,6 +234,14 @@ class Parser:
 
         elif Parser.tokens.actual.type == "IDENTIFIER":
             res = Identifier(Parser.tokens.actual.value)
+            Parser.tokens.selectNext()
+
+        elif Parser.tokens.actual.type == "TRUE" or Parser.tokens.actual.type == "FALSE":
+            res = BoolVal(Parser.tokens.actual.value)
+            Parser.tokens.selectNext()
+
+        elif Parser.tokens.actual.type == "STRING":
+            res = StringVal(Parser.tokens.actual.value)
             Parser.tokens.selectNext()
 
         else:

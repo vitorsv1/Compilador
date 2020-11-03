@@ -8,7 +8,9 @@ class Tokenizer:
         self.position = 0
         self.actual = None
         self.keywords = {"println": "PRINT",
-                        "readline": "READLINE", "if": "IF", "else": "ELSE", "elseif": "ELSEIF", "while": "WHILE", "end": "END"}
+                        "readline": "READLINE", "if": "IF", "else": "ELSE", "elseif": "ELSEIF", "while": "WHILE", 
+                        "end": "END", "Int":"INT", "Bool":"BOOL", "String":"STRING",
+                        "local": "LOCAL", "true":"TRUE", "false":"FALSE"}
 
     def selectNext(self):
 
@@ -44,6 +46,17 @@ class Tokenizer:
             else:
                 self.actual = Token("IDENTIFIER", tok)
             return
+
+        elif self.origin[self.position] == '"':
+            tok = ""
+            self.position += 1
+            while (self.position < (len(self.origin))) and \
+                self.origin[self.position] != '"':
+                tok += self.origin[self.position]
+                self.position += 1
+
+            self.position += 1
+            self.actual = Token("STRING", tok)
 
         elif self.origin[self.position] == '+':
             self.actual = Token("PLUS", '+')
@@ -116,6 +129,15 @@ class Tokenizer:
             if(self.position < len(self.origin)):
                 if(self.origin[self.position] == '='):
                     self.actual = Token("IGUAL_I", '==')
+                    self.position += 1
+            return
+        
+        elif self.origin[self.position] == ':':
+            self.actual = Token("DOIS_P", ':')
+            self.position += 1
+            if(self.position < len(self.origin)):
+                if(self.origin[self.position] == ':'):
+                    self.actual = Token("DOIS_PP", '::')
                     self.position += 1
             return
 
