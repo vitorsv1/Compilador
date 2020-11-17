@@ -133,13 +133,13 @@ class UnOp(Node):
 
 class NoOp(Node):
     def __init__(self):
-        self.value = None
+        super().__init__(None, None)
     def Evaluate(self):
         pass  
 
 class Identifier(Node):
     def __init__(self, value):
-        self.value = value
+        super().__init__(value, None)
     
     def Evaluate(self):
         return table.getter(self.value)
@@ -183,7 +183,7 @@ class Statement(Node):
 
 class Readline(Node):
     def __init__(self):
-        self.value = None
+        super().__init__(None, None)
     
     def Evaluate(self):
         return ["INT", int(input())]

@@ -2,11 +2,19 @@ local x::Int
 local x1::Int
 local y2::Int
 local y::Int
+local j::String
+local verdade::Bool
 
 x = 5
 x1 = 0
 y2 = 10
 y = readline()
+j = "oi teste"
+println(j)
+verdade = true
+if (verdade)
+    println("variavel booleana funciona")
+end
 
 while (x1 < y) || (x1 == y)
     if x1 < 3
@@ -30,14 +38,14 @@ while (x1 < y) || (x1 == y)
     println(x1)
     x1 = x1 + 1
 end
+println("operacoes de tipos")
+println(1 + true)  #= Ok =#
+println("ok")
+println(1 && true) #= Ok =#
+println("ok")
 
-local x::Int
-local y::Bool
-local z::String
+println("a" * 1 * true) #= Ok =#
+println("ok")
 
-x = 1
-y = x || true
-z = "x: "
-
-println(x + y)
-println(z * x)
+println("a" == "b") #= Ok, resultado bool: False =#
+println("ok")
