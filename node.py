@@ -301,7 +301,8 @@ class If(Node):
         self.children[1].Evaluate()
         asm.write_line(f"EXIT_{self.i}:")
         if len(self.children) > 2 and self.children[2]:
-            self.children[2].Evaluate()
+            
+            self.children[0].Evaluate()
             asm.write_line("CMP EBX, False")
             asm.write_line(f"JNE EXIT_ELSE_{self.i}")
             self.children[2].Evaluate()
