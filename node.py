@@ -201,8 +201,11 @@ class If(Node):
         super().__init__(None,children)
     
     def Evaluate(self):
-        if (self.children[0].Evaluate()[1]):
-            return self.children[1].Evaluate()
+        if (self.children[0].Evaluate()[0] != "STRING"):    
+            if (self.children[0].Evaluate()[1]):
+                return self.children[1].Evaluate()
+            else:
+                if len(self.children) > 2:
+                    return self.children[2].Evaluate()
         else:
-            if len(self.children) > 2:
-                return self.children[2].Evaluate()
+            raise NameError("Stderr string in IF")
