@@ -10,7 +10,8 @@ class Tokenizer:
         self.keywords = {"println": "PRINT",
                         "readline": "READLINE", "if": "IF", "else": "ELSE", "elseif": "ELSEIF", "while": "WHILE", 
                         "end": "END", "Int":"INT", "Bool":"BOOL", "String":"STRING",
-                        "local": "LOCAL", "true":"TRUE", "false":"FALSE"}
+                        "local": "LOCAL", "true":"TRUE", "false":"FALSE", "function":"FUNCTION",
+                        "return": "RETURN"}
 
     def selectNext(self):
 
@@ -143,6 +144,11 @@ class Tokenizer:
 
         elif self.origin[self.position] == '\n':
             self.actual = Token("BREAK", '\n')
+            self.position += 1
+            return
+
+        elif self.origin[self.position] == "," :
+            self.actual = Token('COMMA', ",")
             self.position += 1
             return
 

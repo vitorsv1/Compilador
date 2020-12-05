@@ -7,151 +7,164 @@ class Node:
         self.value = value
         self.children = children
 
-    def Evaluate(self):
+    def Evaluate(self, symbomtable):
         pass
 
 class IntVal(Node):
     def __init__(self,value):
         super().__init__(value, None)
         
-    def Evaluate(self):
-        return ["INT", self.value]
+    def Evaluate(self, symbomtable):
+        return [self.value, "Int"]
 
 class StringVal(Node):
     def __init__(self,value):
         super().__init__(value, None)
         
-    def Evaluate(self):
-        return ["STRING", self.value]
+    def Evaluate(self, symbomtable):
+        return [self.value, "String"]
 
 class BoolVal(Node):
     def __init__(self,value):
         super().__init__(value, None)
         
-    def Evaluate(self):
+    def Evaluate(self, symbomtable):
         if self.value == "false":
-            return ["BOOL", 0]
+            return [0, "Bool"]
         elif self.value == "true":
-            return ["BOOL", 1]
+            return [1, "Bool"]
 
 class BinOp(Node):
     def __init__(self,value,children):
         super().__init__(value,children)
     
-    def Evaluate(self):
+    def Evaluate(self, symbomtable):
         if self.value == "-":
-            c0 = self.children[0].Evaluate()
-            c1 = self.children[1].Evaluate()
-            if c0[0] == "STRING" or c1[0] == "STRING":
+            c0 = self.children[0].Evaluate(symbomtable)
+            c1 = self.children[1].Evaluate(symbomtable)
+            if c0[0] == "String" or c1[0] == "String":
                 raise NameError(f'Incompatible operation - with {c0[0]} and {c1[0]}')
-            
-            return ["INT", self.children[0].Evaluate()[1] - self.children[1].Evaluate()[1]]
+            return [c0[1] - c1[1], "Int"]
 
         elif self.value == "+":
-            c0 = self.children[0].Evaluate()
-            c1 = self.children[1].Evaluate()
-            if c0[0] == c1[0]:
-                return [c0[0], c0[1] + c1[1]]
-            elif c0[0] == "STRING" or c1[0] == "STRING":
-                raise NameError(f'Incompatible operation + with {c0[0]} and {c1[0]}')
+            c0 = self.children[0].Evaluate(symbomtable)
+            c1 = self.children[1].Evaluate(symbomtable)
+            if(c0[1] != 'String' and c1[1] != 'String'):
+                return [c0[0] + c1[0], 'Int']
             else:
-                return ["INT", c0[1] + c1[1]]
+                raise NameError(f'Incompatible operation + with {c0[0]} and {c1[0]}')
 
         elif self.value == "*":
-            c0 = self.children[0].Evaluate()
-            c1 = self.children[1].Evaluate()
-            if c0[0] == "STRING" or c1[0] == "STRING":
-                if c0[0] == "BOOL":
-                    if c0[1] == 1:
-                        c0[1] = "true"
+            c0 = self.children[0].Evaluate(symbomtable)
+            c1 = self.children[1].Evaluate(symbomtable)
+            if c0[1] == "String" or c1[1] == "String":
+                if c0[1] == "Bool":
+                    if c0[0] == 1:
+                        c0[0] = "true"
                     else:
-                        c0[1] = "false"
-                if c1[0] == "BOOL":
-                    if c1[1] == 1:
-                        c1[1] = "true"
+                        c0[0] = "false"
+                if c1[1] == "Bool":
+                    if c1[0] == 1:
+                        c1[0] = "true"
                     else:
-                        c1[1] = "false"
-                return ["STRING", str(c0[1]) + str(c1[1])]        
-            return ["INT", c0[1] * c1[1]]
+                        c1[0] = "false"
+                return [str(c0[0]) + str(c1[0]), "String"]        
+            return [c0[0] * c1[0], "Int"]
 
         elif self.value == "/":
             c0 = self.children[0].Evaluate()
             c1 = self.children[1].Evaluate()
-            if c0[0] == "STRING" or c1[0] == "STRING":
-                raise NameError(f'Incompatible operation / with {c0[0]} and {c1[0]}')
-            return ["INT", int(self.children[0].Evaluate()[1] / self.children[1].Evaluate()[1])]
+            if c0[1] == "String" or c1[1] == "String":
+                raise NameError(f'Incompatible operation / with {c0[1]} and {c1[1]}')
+            return [int(c0[0] / c1[0]), "Int"]
 
         elif self.value == "&&":
             c0 = self.children[0].Evaluate()
             c1 = self.children[1].Evaluate()
 
-            if c0[0] == "STRING" or c1[0] == "STRING":
-                raise NameError(f'Incompatible operation && with {c0[0]} and {c1[0]}')
-            if c0[1] and c1[1]:
-                return ["BOOL", 1]
+            if c0[1] == "String" or c1[1] == "String":
+                raise NameError(f'Incompatible operation && with {c0[1]} and {c1[1]}')
+            if c0[0] and c1[0]:
+                return [1, "Bool"]
             else:
-                return ["BOOL", 0]
+                return [0, "Bool"]
 
         elif self.value == "||":
-            if self.children[0].Evaluate()[1] or self.children[1].Evaluate()[1]:
-                return ["BOOL", 1]
+            c0 = self.children[0].Evaluate()
+            c1 = self.children[1].Evaluate()
+
+            if c0[1] == "String" or c1[1] == "String":
+                raise NameError(f'Incompatible operation || with {c0[1]} and {c1[1]}')
+            if c0[0] or c1[0]:
+                return [1, "Bool"]
             else:
-                return ["BOOL", 0]
+                return [0, "Bool"]
 
         elif self.value == ">":
-            if self.children[0].Evaluate()[1] > self.children[1].Evaluate()[1]:
-                return ["BOOL", 1]
+            c0 = self.children[0].Evaluate()
+            c1 = self.children[1].Evaluate()
+
+            if c0[1] == "String" or c1[1] == "String":
+                raise NameError(f'Incompatible operation > with {c0[1]} and {c1[1]}')
+            if c0[0] > c1[0]:
+                return [1, "Bool"]
             else:
-                return ["BOOL", 0]
+                return [0, "Bool"]
 
         elif self.value == "<":
-            if self.children[0].Evaluate()[1] < self.children[1].Evaluate()[1]:
-                return ["BOOL", 1]
+            c0 = self.children[0].Evaluate()
+            c1 = self.children[1].Evaluate()
+
+            if c0[1] == "String" or c1[1] == "String":
+                raise NameError(f'Incompatible operation > with {c0[1]} and {c1[1]}')
+            if c0[0] < c1[0]:
+                return [1, "Bool"]
             else:
-                return ["BOOL", 0]
+                return [0, "Bool"]
 
         elif self.value == "==":
-            if self.children[0].Evaluate()[1] == self.children[1].Evaluate()[1]:
-                return ["BOOL", 1]
+            if self.children[0].Evaluate()[0] == self.children[1].Evaluate()[0]:
+                return [1, "Bool"]
             else:
-                return ["BOOL", 0]
+                return [0, "Bool"]
 
 class UnOp(Node):
     def __init__(self,value,children):
         super().__init__(value,children)
 
-    def Evaluate(self):
+    def Evaluate(self, symbomtable):
+        c0 = self.children[0].Evaluate(symbomtable)
         if self.value == "-":
-            return ["INT", -self.children[0].Evaluate()[1]]
+            return [-c0[0], "Int"]
         elif self.value == "+":
-            return ["INT", self.children[0].Evaluate()[1]]
+            return [c0[0], "Int"]
         elif self.value == "!":
-            if not self.children[0].Evaluate()[1]:
-                return ["BOOL", 1]
+            if not c0[0]:
+                return [1, "Bool"]
             else:
-                return ["BOOL", 0]
+                return [0, "Bool"]
 
 class NoOp(Node):
     def __init__(self):
         self.value = None
-    def Evaluate(self):
+    def Evaluate(self, symbomtable):
         pass  
 
 class Identifier(Node):
     def __init__(self, value):
         self.value = value
     
-    def Evaluate(self):
-        return table.getter(self.value)
+    def Evaluate(self, symbomtable):
+        return symbomtable.getter_symbol(self.value)
 
 class Print(Node):
     def __init__(self,children):
         super().__init__(None,children)
     
-    def Evaluate(self):
-        res = self.children[0].Evaluate()
-        if res[0] == "BOOL":
-            if res[1] == 1:
+    def Evaluate(self, symbomtable):
+        res = self.children[0].Evaluate(symbomtable)
+        if res[1] == "BOOL":
+            if res[0] == 1:
                 print("true")
             else:
                 print("false")
@@ -159,53 +172,109 @@ class Print(Node):
             print(res[1])
 
 class Assigment(Node):
-    def __init__(self,value,children):
-        super().__init__(value,children)
+    def __init__(self):
+        super().__init__(None,[None, None])
     
-    def Evaluate(self):
-        if self.value == "=":
-            c1 = self.children[1].Evaluate()
-            if c1[0] == table.getter(self.children[0].value)[0]:
-                #print(self.children[0].value, c1[0], c1[1])
-                table.setter(self.children[0].value, c1[0], c1[1])
-            else:
-                raise NameError(f'Type expected was {table.getter(self.children[0].value)[0]} and got {c1[0]}')
-        elif self.value == "::":
-            table.setter(self.children[0], self.children[1], None)
+    def Evaluate(self, symbomtable):
+        c1 = self.children[1].evaluate(symbomtable)
+        symbolType = symbomtable.getter_type(self.children[0].value)
+        if(c1[1] == symbolType):
+            symbomtable.set_symbol(self.children[0].value, c1[0])
+        else:
+            raise NameError(f'Type and value are not igual {c1[1]} and {symbolType}')
 
+class AssigmentType(Node):
+    def __init__(self):
+        self.children = [None, None]
+
+    def evaluate(self, symbol_table):
+        symbol_table.set_type(self.children[0].value, self.children[1])
+        
 class Statement(Node):
-    def __init__(self, children):
-        super().__init__(None,children)
+    def __init__(self):
+        super().__init__(None, [])
     
-    def Evaluate(self):
-        for child in self.children:
-            child.Evaluate()
+    def Evaluate(self, symbomtable):
+        rv = symbomtable.getter_return()[0]
+        i = 0
+        while(rv == None and i < len(self.children)):
+            self.children[i].Evaluate(symbomtable)
+            rv = symbomtable.getter_return()[0]
+            i = i + 1
 
 class Readline(Node):
     def __init__(self):
         self.value = None
     
-    def Evaluate(self):
-        return ["INT", int(input())]
+    def Evaluate(self, symbomtable):
+        return [int(input()), "Int"]
 
 class While(Node):
     def __init__(self, children):
-        super().__init__(None,children)
+        super().__init__(None,[None, None])
     
-    def Evaluate(self):
-        while self.children[0].Evaluate()[1]:
-            self.children[1].Evaluate()
+    def Evaluate(self, symbomtable):
+        while self.children[0].Evaluate(symbomtable)[0]:
+            self.children[0].Evaluate(symbomtable)
 
 class If(Node):
-    def __init__(self, children):
-        super().__init__(None,children)
+    def __init__(self):
+        super().__init__(None,[None, None, None])
     
-    def Evaluate(self):
-        if (self.children[0].Evaluate()[0] != "STRING"):    
-            if (self.children[0].Evaluate()[1]):
-                return self.children[1].Evaluate()
+    def Evaluate(self, symbomtable):
+        if (self.children[0].Evaluate(symbomtable)[1] != "String"):    
+            if (self.children[0].Evaluate(symbomtable)[0]):
+                self.children[1].Evaluate(symbomtable)
             else:
-                if len(self.children) > 2:
-                    return self.children[2].Evaluate()
+                if self.children[2]:
+                    self.children[2].Evaluate(symbomtable)
         else:
             raise NameError("Stderr string in IF")
+
+class FunctionDeclaration(Node):
+    def __init__(self, value, typ):
+        self.typ = typ
+        self.value = value
+        self.children = []
+
+    def evaluate(self, symbolTable):
+        table.setter_function(self.value, self, self.typ)
+
+class Return(Node):
+    def __init__(self):
+        self.children = [None]
+
+    def evaluate(self, symbolTable):
+        symbolTable.setter_return(self.children[0].evaluate(symbolTable)[0], self.children[0].evaluate(symbolTable)[1])
+
+class FunctionCall(Node):
+    def __init__(self, value):
+        self.children = []
+        self.value = value
+
+    def evaluate(self, symbolTable):
+        function = table.getter_function(self.value)
+        size = len(function[0].children)-1
+        
+        if size != len(self.children):
+            raise NameError('Number of arguments doenst match')
+        else:
+            symbolTableTemp = symtable.SymbolTable()
+            
+            for i in range(size):
+                c1Evaluate = self.children[i].evaluate(symbolTable)
+                value = function[0].children[i][0]
+                typeFunction = function[0].children[i][1]
+                if(typeFunction != c1Evaluate[1]):
+                    raise NameError(f'Argument {typeFunction} type is different then {c1Evaluate[1]}')
+                else:
+                    symbolTableTemp.setter_type(value, typeFunction)
+                    symbolTableTemp.setter_symbol(value, c1Evaluate[0])
+            
+            function[0].children[-1].evaluate(symbolTableTemp)
+            returno = symbolTableTemp.getter_return()
+            
+            if(returno[1] == function[1]):
+                return returno
+            else:
+                raise NameError('Return and Function are different')
