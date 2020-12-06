@@ -1,12 +1,13 @@
-function soma(x::Int, y::Int)::Int
-local a::Int
-a = x + y
-println(a)
-return a
+function soma(x::Int)::Int
+    local a::Int
+    a = x + 1
+    println(a)
+    if a < 5
+        a = soma(a)
+    end
+    return a
 end
 local a::Int
-local b::Int
-a = 3
-b = soma(3, 4)
+a = 1
+a = soma(a)
 println(a)
-println(b)   

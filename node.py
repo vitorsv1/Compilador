@@ -72,15 +72,15 @@ class BinOp(Node):
             return [c0[0] * c1[0], "Int"]
 
         elif self.value == "/":
-            c0 = self.children[0].Evaluate()
-            c1 = self.children[1].Evaluate()
+            c0 = self.children[0].Evaluate(symbomtable)
+            c1 = self.children[1].Evaluate(symbomtable)
             if c0[1] == "String" or c1[1] == "String":
                 raise NameError(f'Incompatible operation / with {c0[1]} and {c1[1]}')
             return [int(c0[0] / c1[0]), "Int"]
 
         elif self.value == "&&":
-            c0 = self.children[0].Evaluate()
-            c1 = self.children[1].Evaluate()
+            c0 = self.children[0].Evaluate(symbomtable)
+            c1 = self.children[1].Evaluate(symbomtable)
 
             if c0[1] == "String" or c1[1] == "String":
                 raise NameError(f'Incompatible operation && with {c0[1]} and {c1[1]}')
@@ -90,8 +90,8 @@ class BinOp(Node):
                 return [0, "Bool"]
 
         elif self.value == "||":
-            c0 = self.children[0].Evaluate()
-            c1 = self.children[1].Evaluate()
+            c0 = self.children[0].Evaluate(symbomtable)
+            c1 = self.children[1].Evaluate(symbomtable)
 
             if c0[1] == "String" or c1[1] == "String":
                 raise NameError(f'Incompatible operation || with {c0[1]} and {c1[1]}')
@@ -101,8 +101,8 @@ class BinOp(Node):
                 return [0, "Bool"]
 
         elif self.value == ">":
-            c0 = self.children[0].Evaluate()
-            c1 = self.children[1].Evaluate()
+            c0 = self.children[0].Evaluate(symbomtable)
+            c1 = self.children[1].Evaluate(symbomtable)
 
             if c0[1] == "String" or c1[1] == "String":
                 raise NameError(f'Incompatible operation > with {c0[1]} and {c1[1]}')
@@ -112,8 +112,8 @@ class BinOp(Node):
                 return [0, "Bool"]
 
         elif self.value == "<":
-            c0 = self.children[0].Evaluate()
-            c1 = self.children[1].Evaluate()
+            c0 = self.children[0].Evaluate(symbomtable)
+            c1 = self.children[1].Evaluate(symbomtable)
 
             if c0[1] == "String" or c1[1] == "String":
                 raise NameError(f'Incompatible operation > with {c0[1]} and {c1[1]}')
@@ -123,7 +123,7 @@ class BinOp(Node):
                 return [0, "Bool"]
 
         elif self.value == "==":
-            if self.children[0].Evaluate()[0] == self.children[1].Evaluate()[0]:
+            if self.children[0].Evaluate(symbomtable)[0] == self.children[1].Evaluate(symbomtable)[0]:
                 return [1, "Bool"]
             else:
                 return [0, "Bool"]
