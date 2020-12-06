@@ -13,7 +13,7 @@ class Node:
         self.children = children
         self.i = Node.sumi()
 
-    def Evaluate(self):
+    def Evaluate(self, symbomtable):
         pass
 
     @staticmethod
@@ -25,285 +25,280 @@ class IntVal(Node):
     def __init__(self,value):
         super().__init__(value, None)
         
+<<<<<<< HEAD
     def Evaluate(self):
         #return ["INT", self.value]
         asm.write_line(f"MOV EBX, {self.value};")
+=======
+    def Evaluate(self, symbomtable):
+        return [self.value, "Int"]
+>>>>>>> vv2.4
 
 class StringVal(Node):
     def __init__(self,value):
         super().__init__(value, None)
         
-    def Evaluate(self):
-        return ["STRING", self.value]
+    def Evaluate(self, symbomtable):
+        return [self.value, "String"]
 
 class BoolVal(Node):
     def __init__(self,value):
         super().__init__(value, None)
         
-    def Evaluate(self):
+    def Evaluate(self, symbomtable):
         if self.value == "false":
-            #return ["BOOL", 0]
-            asm.write_line("CALL binop_false")
+            return [0, "Bool"]
         elif self.value == "true":
-            #return ["BOOL", 1]
-            asm.write_line("CALL binop_true")
+            return [1, "Bool"]
 
 class BinOp(Node):
-    def __init__(self,value,children):
-        super().__init__(value,children)
+    def __init__(self,value):
+        super().__init__(value,[None, None])
     
-    def Evaluate(self):
+    def Evaluate(self, symbomtable):
         if self.value == "-":
-            self.children[0].Evaluate()
-            asm.write_line("PUSH EBX ;")
-            self.children[1].Evaluate()
-            asm.write_line("POP EAX ;")
-            asm.write_line("SUB EAX, EBX ;")
-            asm.write_line("MOV EBX, EAX ;")
-
-            #if c0[0] == "STRING" or c1[0] == "STRING":
-            #    raise NameError(f'Incompatible operation - with {c0[0]} and {c1[0]}')
-            
-            #return ["INT", self.children[0].Evaluate()[1] - self.children[1].Evaluate()[1]]
+            c0 = self.children[0].Evaluate(symbomtable)
+            c1 = self.children[1].Evaluate(symbomtable)
+            if c0[0] == "String" or c1[0] == "String":
+                raise NameError(f'Incompatible operation - with {c0[0]} and {c1[0]}')
+            return [c0[1] - c1[1], "Int"]
 
         elif self.value == "+":
-            self.children[0].Evaluate()
-            asm.write_line("PUSH EBX ;")
-            self.children[1].Evaluate()
-            asm.write_line("POP EAX ;")
-            asm.write_line("ADD EAX, EBX ;")
-            asm.write_line("MOV EBX, EAX ;")
-
-            #if c0[0] == c1[0]:
-            #    return [c0[0], c0[1] + c1[1]]
-            #elif c0[0] == "STRING" or c1[0] == "STRING":
-            #    raise NameError(f'Incompatible operation + with {c0[0]} and {c1[0]}')
-            #else:
-            #    return ["INT", c0[1] + c1[1]]
+            c0 = self.children[0].Evaluate(symbomtable)
+            c1 = self.children[1].Evaluate(symbomtable)
+            if(c0[1] != 'String' and c1[1] != 'String'):
+                return [c0[0] + c1[0], 'Int']
+            else:
+                raise NameError(f'Incompatible operation + with {c0[0]} and {c1[0]}')
 
         elif self.value == "*":
-            self.children[0].Evaluate()
-            asm.write_line("PUSH EBX ;")
-            self.children[1].Evaluate()
-            asm.write_line("POP EAX ;")
-            asm.write_line("MUL EBX ;")
-            asm.write_line("MOV EBX, EAX ;")
-
-            #if c0[0] == "STRING" or c1[0] == "STRING":
-            #    if c0[0] == "BOOL":
-            #        if c0[1] == 1:
-            #            c0[1] = "true"
-            #        else:
-            #            c0[1] = "false"
-            #    if c1[0] == "BOOL":
-            #        if c1[1] == 1:
-            #            c1[1] = "true"
-            #        else:
-            #            c1[1] = "false"
-            #    return ["STRING", str(c0[1]) + str(c1[1])]        
-            #return ["INT", c0[1] * c1[1]]
+            c0 = self.children[0].Evaluate(symbomtable)
+            c1 = self.children[1].Evaluate(symbomtable)
+            if c0[1] == "String" or c1[1] == "String":
+                if c0[1] == "Bool":
+                    if c0[0] == 1:
+                        c0[0] = "true"
+                    else:
+                        c0[0] = "false"
+                if c1[1] == "Bool":
+                    if c1[0] == 1:
+                        c1[0] = "true"
+                    else:
+                        c1[0] = "false"
+                return [str(c0[0]) + str(c1[0]), "String"]        
+            return [c0[0] * c1[0], "Int"]
 
         elif self.value == "/":
-            self.children[0].Evaluate()
-            asm.write_line("PUSH EBX ;")
-            self.children[1].Evaluate()
-            asm.write_line("POP EAX ;")
-            asm.write_line("DIV EBX ;")
-            asm.write_line("MOV EBX, EAX ;")
-            
-            #if c0[0] == "STRING" or c1[0] == "STRING":
-            #    raise NameError(f'Incompatible operation / with {c0[0]} and {c1[0]}')
-            #return ["INT", int(self.children[0].Evaluate()[1] / self.children[1].Evaluate()[1])]
+            c0 = self.children[0].Evaluate(symbomtable)
+            c1 = self.children[1].Evaluate(symbomtable)
+            if c0[1] == "String" or c1[1] == "String":
+                raise NameError(f'Incompatible operation / with {c0[1]} and {c1[1]}')
+            return [int(c0[0] / c1[0]), "Int"]
 
         elif self.value == "&&":
-            self.children[0].Evaluate()
-            asm.write_line("PUSH EBX ;")
-            self.children[1].Evaluate()
-            asm.write_line("POP EAX ;")
-            asm.write_line("AND EAX, EBX ;")
-            asm.write_line("MOV EBX, EAX ;")
+            c0 = self.children[0].Evaluate(symbomtable)
+            c1 = self.children[1].Evaluate(symbomtable)
 
-            #if c0[0] == "STRING" or c1[0] == "STRING":
-            #    raise NameError(f'Incompatible operation && with {c0[0]} and {c1[0]}')
-            #if c0[1] and c1[1]:
-            #    return ["BOOL", 1]
-            #else:
-            #    return ["BOOL", 0]
+            if c0[1] == "String" or c1[1] == "String":
+                raise NameError(f'Incompatible operation && with {c0[1]} and {c1[1]}')
+            if c0[0] and c1[0]:
+                return [1, "Bool"]
+            else:
+                return [0, "Bool"]
 
         elif self.value == "||":
-            self.children[0].Evaluate()
-            asm.write_line("PUSH EBX ;")
-            self.children[1].Evaluate()
-            asm.write_line("POP EAX ;")
-            asm.write_line("OR EAX, EBX ;")
-            asm.write_line("MOV EBX, EAX ;")
+            c0 = self.children[0].Evaluate(symbomtable)
+            c1 = self.children[1].Evaluate(symbomtable)
 
-            #if c0 or c1:
-            #    return ["BOOL", 1]
-            #else:
-            #    return ["BOOL", 0]
+            if c0[1] == "String" or c1[1] == "String":
+                raise NameError(f'Incompatible operation || with {c0[1]} and {c1[1]}')
+            if c0[0] or c1[0]:
+                return [1, "Bool"]
+            else:
+                return [0, "Bool"]
 
         elif self.value == ">":
-            self.children[0].Evaluate()
-            asm.write_line("PUSH EBX ;")
-            self.children[1].Evaluate()
-            asm.write_line("POP EAX ;")
-            asm.write_line("CMP EAX, EBX")
-            asm.write_line("CALL binop_jg")
+            c0 = self.children[0].Evaluate(symbomtable)
+            c1 = self.children[1].Evaluate(symbomtable)
 
-            #if c0 > c1:
-            #    return ["BOOL", 1]
-            #else:
-            #    return ["BOOL", 0]
+            if c0[1] == "String" or c1[1] == "String":
+                raise NameError(f'Incompatible operation > with {c0[1]} and {c1[1]}')
+            if c0[0] > c1[0]:
+                return [1, "Bool"]
+            else:
+                return [0, "Bool"]
 
         elif self.value == "<":
-            self.children[0].Evaluate()
-            asm.write_line("PUSH EBX ;")
-            self.children[1].Evaluate()
-            asm.write_line("POP EAX ;")
-            asm.write_line("CMP EAX, EBX")
-            asm.write_line("CALL binop_jl")
+            c0 = self.children[0].Evaluate(symbomtable)
+            c1 = self.children[1].Evaluate(symbomtable)
 
-            #if c0 < c1:
-            #    return ["BOOL", 1]
-            #else:
-            #    return ["BOOL", 0]
+            if c0[1] == "String" or c1[1] == "String":
+                raise NameError(f'Incompatible operation > with {c0[1]} and {c1[1]}')
+            if c0[0] < c1[0]:
+                return [1, "Bool"]
+            else:
+                return [0, "Bool"]
 
         elif self.value == "==":
-            self.children[0].Evaluate()
-            asm.write_line("PUSH EBX ;")
-            self.children[1].Evaluate()
-            asm.write_line("POP EAX ;")
-            asm.write_line("CMP EAX, EBX")
-            asm.write_line("CALL binop_je")
-            
-            #if c0 == c1:
-            #    return ["BOOL", 1]
-            #else:
-            #    return ["BOOL", 0]
+            if self.children[0].Evaluate(symbomtable)[0] == self.children[1].Evaluate(symbomtable)[0]:
+                return [1, "Bool"]
+            else:
+                return [0, "Bool"]
 
 class UnOp(Node):
-    def __init__(self,value,children):
-        super().__init__(value,children)
+    def __init__(self,value):
+        super().__init__(value,[None])
 
-    def Evaluate(self):
-        if self.value == "+":
-            #return ["INT", -self.children[0].Evaluate()[1]]
-            self.children[0].Evaluate()
-            asm.write_line(f"MOV EBX, EAX")
-        elif self.value == "-":
-            #return ["INT", self.children[0].Evaluate()[1]]
-            self.children[0].Evaluate()
-            asm.write_line(f"iMUL -1")
-            asm.write_line(f"MOV EBX, EAX")
+    def Evaluate(self, symbomtable):
+        c0 = self.children[0].Evaluate(symbomtable)
+        if self.value == "-":
+            return [-c0[0], "Int"]
+        elif self.value == "+":
+            return [c0[0], "Int"]
         elif self.value == "!":
-            self.children[0].Evaluate()
-            asm.write_line(f"NOT EAX")
-            asm.write_line(f"MOV EBX, EAX")
-            #if not self.children[0].Evaluate()[1]:
-            #    return ["BOOL", 1]
-            #else:
-            #    return ["BOOL", 0]
-
+            if not c0[0]:
+                return [1, "Bool"]
+            else:
+                return [0, "Bool"]
 
 class NoOp(Node):
     def __init__(self):
-        super().__init__(None, None)
-    def Evaluate(self):
-        asm.write_line("NOP")  
+        self.value = None
+    def Evaluate(self, symbomtable):
+        pass  
 
 class Identifier(Node):
     def __init__(self, value):
         super().__init__(value, None)
     
-    def Evaluate(self):
-        #return table.getter(self.value)
-        pos = table.getter(self.value)[2]
-        asm.write_line(f"MOV EBX, [EBP-{pos}]")
+    def Evaluate(self, symbomtable):
+        return symbomtable.getter_symbol(self.value)
 
 class Print(Node):
-    def __init__(self,children):
-        super().__init__(None,children)
+    def __init__(self):
+        super().__init__(None,[None])
     
-    def Evaluate(self):
-        self.children[0].Evaluate()
-        #if res[0] == "BOOL":
-        #    if res[1] == 1:
-        #        print("true")
-        #    else:
-        #        print("false")
-        #else:
-        #    print(res[1])
-        asm.write_line("PUSH EBX")
-        asm.write_line("CALL print")
-        asm.write_line("POP EBX")
+    def Evaluate(self, symbomtable):
+        res = self.children[0].Evaluate(symbomtable)
+        if res[1] == "BOOL":
+            if res[0] == 1:
+                print("true")
+            else:
+                print("false")
+        else:
+            print(res[0])
 
 class Assigment(Node):
-    def __init__(self,value,children):
-        super().__init__(value,children)
+    def __init__(self):
+        super().__init__(None,[None, None])
     
-    def Evaluate(self):
-        if self.value == "=":
-            self.children[1].Evaluate()
-            #if c1[0] == table.getter(self.children[0].value)[0]:
-            pos = table.getter(self.children[0].value)[2]
-            asm.write_line(f"MOV [EBP-{pos}], EBX;")
-            #table.setter(self.children[0].value, c1[0], c1[1])
-            #else:
-            #    raise NameError(f'Type expected was {table.getter(self.children[0].value)[0]} and got {c1[0]}')
-        elif self.value == "::":
-            asm.write_line("PUSH DWORD 0 ;")
-            table.setter(self.children[0], self.children[1], None)
+    def Evaluate(self, symbomtable):
+        symbolType = symbomtable.getter_type(self.children[0].value)
+        c1 = self.children[1].Evaluate(symbomtable)
+        if(c1[1] == symbolType):
+            symbomtable.setter_symbol(self.children[0].value, c1[0])
+        else:
+            raise NameError(f'Type and value are not igual {c1[1]} and {symbolType}')
 
+class AssigmentType(Node):
+    def __init__(self):
+        self.children = [None, None]
+
+    def Evaluate(self, symboltable):
+        symboltable.setter_type(self.children[0].value, self.children[1])
+        
 class Statement(Node):
-    def __init__(self, children):
-        super().__init__(None,children)
+    def __init__(self):
+        super().__init__(None, [])
     
-    def Evaluate(self):
-        for child in self.children:
-            child.Evaluate()
+    def Evaluate(self, symbomtable):
+        rv = symbomtable.getter_return()[0]
+        i = 0
+        while(rv == None and i < len(self.children)):
+            self.children[i].Evaluate(symbomtable)
+            rv = symbomtable.getter_return()[0]
+            i = i + 1
 
 class Readline(Node):
     def __init__(self):
         super().__init__(None, None)
     
-    def Evaluate(self):
-        return ["INT", int(input())]
+    def Evaluate(self, symbomtable):
+        return [int(input()), "Int"]
 
 class While(Node):
-    def __init__(self, children):
-        super().__init__(None,children)
+    def __init__(self):
+        super().__init__(None,[None, None])
     
-    def Evaluate(self):
-        #while self.children[0].Evaluate()[1]:
-        #    self.children[1].Evaluate()
-        asm.write_line(f"LOOP_{self.i}:")
-        self.children[0].Evaluate()
-        asm.write_line(f"CMP EBX, False")
-        asm.write_line(f"JE EXIT_{self.i}")
-        self.children[1].Evaluate()
-        asm.write_line(f"JMP LOOP_{self.i}")
-        asm.write_line(f"EXIT_{self.i}:")
+    def Evaluate(self, symbomtable):
+        while self.children[0].Evaluate(symbomtable)[0]:
+            self.children[0].Evaluate(symbomtable)
 
 class If(Node):
-    def __init__(self, children):
-        super().__init__(None,children)
+    def __init__(self):
+        super().__init__(None,[None, None, None])
     
-    def Evaluate(self):
-        #if (self.children[0].Evaluate()[1]):
-        #    return self.children[1].Evaluate()
-        #else:
-        #    if len(self.children) > 2:
-        #        return self.children[2].Evaluate()
-        self.children[0].Evaluate()
-        asm.write_line(f"CMP EBX, False")
-        asm.write_line(f"JE EXIT_{self.i}")
-        self.children[1].Evaluate()
-        asm.write_line(f"EXIT_{self.i}:")
-        if len(self.children) > 2 and self.children[2]:
+    def Evaluate(self, symbomtable):
+        if (self.children[0].Evaluate(symbomtable)[1] != "String"):    
+            if (self.children[0].Evaluate(symbomtable)[0]):
+                self.children[1].Evaluate(symbomtable)
+            else:
+                if self.children[2]:
+                    self.children[2].Evaluate(symbomtable)
+        else:
+            raise NameError("Stderr string in IF")
+
+class Else(Node):
+    def __init__(self):
+        self.children[None]
+
+    def Evaluate(self, symboltable):
+        return self.children[0].Evaluate(symboltable)
+
+class FunctionDeclaration(Node):
+    def __init__(self, value, typ):
+        self.typ = typ
+        self.value = value
+        self.children = []
+
+    def Evaluate(self, symbolTable):
+        table.setter_function(self.value, self, self.typ)
+
+class Return(Node):
+    def __init__(self):
+        self.children = [None]
+
+    def Evaluate(self, symbolTable):
+        symbolTable.setter_return(self.children[0].Evaluate(symbolTable)[0], self.children[0].Evaluate(symbolTable)[1])
+
+class FunctionCall(Node):
+    def __init__(self, value):
+        self.children = []
+        self.value = value
+
+    def Evaluate(self, symbolTable):
+        function = table.getter_function(self.value)
+        size = len(function[0].children)-1
+        
+        if size != len(self.children):
+            raise NameError('Number of arguments doenst match')
+        else:
+            symbolTableTemp = symtable.SymbolTable()
             
-            self.children[0].Evaluate()
-            asm.write_line("CMP EBX, False")
-            asm.write_line(f"JNE EXIT_ELSE_{self.i}")
-            self.children[2].Evaluate()
-            asm.write_line(f"EXIT_ELSE_{self.i}:")
+            for i in range(size):
+                c1Evaluate = self.children[i].Evaluate(symbolTable)
+                value = function[0].children[i][0]
+                typeFunction = function[0].children[i][1]
+                if(typeFunction == c1Evaluate[1]):
+                    symbolTableTemp.setter_type(value, typeFunction)
+                    symbolTableTemp.setter_symbol(value, c1Evaluate[0])
+                else:
+                    raise NameError(f'Argument {typeFunction} type is different then {c1Evaluate[1]}')
+            
+            function[0].children[-1].Evaluate(symbolTableTemp)
+            returno = symbolTableTemp.getter_return()
+            
+            if(returno[1] == function[1]):
+                return returno
+            else:
+                raise NameError('Return and Function are different')
