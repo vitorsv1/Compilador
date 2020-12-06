@@ -35,8 +35,8 @@ class BoolVal(Node):
             return [1, "Bool"]
 
 class BinOp(Node):
-    def __init__(self,value,children):
-        super().__init__(value,children)
+    def __init__(self,value):
+        super().__init__(value,[None, None])
     
     def Evaluate(self, symbomtable):
         if self.value == "-":
@@ -129,8 +129,8 @@ class BinOp(Node):
                 return [0, "Bool"]
 
 class UnOp(Node):
-    def __init__(self,value,children):
-        super().__init__(value,children)
+    def __init__(self,value):
+        super().__init__(value,[None])
 
     def Evaluate(self, symbomtable):
         c0 = self.children[0].Evaluate(symbomtable)
@@ -158,8 +158,8 @@ class Identifier(Node):
         return symbomtable.getter_symbol(self.value)
 
 class Print(Node):
-    def __init__(self,children):
-        super().__init__(None,children)
+    def __init__(self):
+        super().__init__(None,[None])
     
     def Evaluate(self, symbomtable):
         res = self.children[0].Evaluate(symbomtable)
@@ -176,10 +176,10 @@ class Assigment(Node):
         super().__init__(None,[None, None])
     
     def Evaluate(self, symbomtable):
-        c1 = self.children[1].evaluate(symbomtable)
+        c1 = self.children[1].Evaluate(symbomtable)
         symbolType = symbomtable.getter_type(self.children[0].value)
         if(c1[1] == symbolType):
-            symbomtable.set_symbol(self.children[0].value, c1[0])
+            symbomtable.setter_symbol(self.children[0].value, c1[0])
         else:
             raise NameError(f'Type and value are not igual {c1[1]} and {symbolType}')
 
@@ -187,8 +187,8 @@ class AssigmentType(Node):
     def __init__(self):
         self.children = [None, None]
 
-    def evaluate(self, symbol_table):
-        symbol_table.set_type(self.children[0].value, self.children[1])
+    def Evaluate(self, symboltable):
+        symboltable.setter_type(self.children[0].value, self.children[1])
         
 class Statement(Node):
     def __init__(self):
@@ -210,7 +210,7 @@ class Readline(Node):
         return [int(input()), "Int"]
 
 class While(Node):
-    def __init__(self, children):
+    def __init__(self):
         super().__init__(None,[None, None])
     
     def Evaluate(self, symbomtable):
@@ -231,28 +231,35 @@ class If(Node):
         else:
             raise NameError("Stderr string in IF")
 
+class Else(Node):
+    def __init__(self):
+        self.children[None]
+
+    def Evaluate(self, symboltable):
+        return self.children[0].Evaluate(symboltable)
+
 class FunctionDeclaration(Node):
     def __init__(self, value, typ):
         self.typ = typ
         self.value = value
         self.children = []
 
-    def evaluate(self, symbolTable):
+    def Evaluate(self, symbolTable):
         table.setter_function(self.value, self, self.typ)
 
 class Return(Node):
     def __init__(self):
         self.children = [None]
 
-    def evaluate(self, symbolTable):
-        symbolTable.setter_return(self.children[0].evaluate(symbolTable)[0], self.children[0].evaluate(symbolTable)[1])
+    def Evaluate(self, symbolTable):
+        symbolTable.setter_return(self.children[0].Evaluate(symbolTable)[0], self.children[0].Evaluate(symbolTable)[1])
 
 class FunctionCall(Node):
     def __init__(self, value):
         self.children = []
         self.value = value
 
-    def evaluate(self, symbolTable):
+    def Evaluate(self, symbolTable):
         function = table.getter_function(self.value)
         size = len(function[0].children)-1
         
@@ -262,7 +269,7 @@ class FunctionCall(Node):
             symbolTableTemp = symtable.SymbolTable()
             
             for i in range(size):
-                c1Evaluate = self.children[i].evaluate(symbolTable)
+                c1Evaluate = self.children[i].Evaluate(symbolTable)
                 value = function[0].children[i][0]
                 typeFunction = function[0].children[i][1]
                 if(typeFunction != c1Evaluate[1]):
@@ -271,7 +278,7 @@ class FunctionCall(Node):
                     symbolTableTemp.setter_type(value, typeFunction)
                     symbolTableTemp.setter_symbol(value, c1Evaluate[0])
             
-            function[0].children[-1].evaluate(symbolTableTemp)
+            function[0].children[-1].Evaluate(symbolTableTemp)
             returno = symbolTableTemp.getter_return()
             
             if(returno[1] == function[1]):
