@@ -17,7 +17,6 @@ class Tokenizer:
 
         if self.position == len(self.origin):
             self.actual = Token("EOF", '"')
-            return
         
         elif self.origin[self.position] == " ":
             self.position += 1
@@ -31,7 +30,7 @@ class Tokenizer:
                 if self.origin[self.position].isalpha() or self.origin[self.position] == "_":
                    raise NameError('Syntaxe incorrect, Number first then Alpha in variable assignment')
             self.actual = Token("INT", int(tok))
-            return
+            #self.position += 1
 
         elif self.origin[self.position].isalpha():
             tok = ""
@@ -46,7 +45,7 @@ class Tokenizer:
                 self.actual = Token(self.keywords[tok], tok)
             else:
                 self.actual = Token("IDENTIFIER", tok)
-            return
+            
 
         elif self.origin[self.position] == '"':
             tok = ""
@@ -62,42 +61,42 @@ class Tokenizer:
         elif self.origin[self.position] == '+':
             self.actual = Token("PLUS", '+')
             self.position += 1
-            return
+             
 
         elif self.origin[self.position] == '-':
             self.actual = Token("MINUS", '-')
             self.position += 1
-            return
+             
         
         elif self.origin[self.position] == '*':
             self.actual = Token("MULTI", '*')
             self.position += 1
-            return
+             
         
         elif self.origin[self.position] == '/':
             self.actual = Token("DIV", '/')
             self.position += 1
-            return
+             
 
         elif self.origin[self.position] == '(':
             self.actual = Token("OPEN_P", '(')
             self.position += 1
-            return
+             
         
         elif self.origin[self.position] == ')':
             self.actual = Token("CLOSE_P", ')')
             self.position += 1
-            return
+             
 
         elif self.origin[self.position] == '<':
             self.actual = Token("MENOR", '<')
             self.position += 1
-            return
+             
 
         elif self.origin[self.position] == '>':
             self.actual = Token("MAIOR", '>')
             self.position += 1
-            return
+             
 
         elif self.origin[self.position] == '|':
             self.position += 1
@@ -105,7 +104,7 @@ class Tokenizer:
                 if(self.origin[self.position] == '|'):
                     self.actual = Token("OR", '||')
                     self.position += 1
-                    return
+                     
             else:
                 raise NameError("Error in char '|' ")
 
@@ -115,14 +114,14 @@ class Tokenizer:
                 if(self.origin[self.position] == '&'):
                     self.actual = Token("AND", '&&')
                     self.position += 1
-                    return
+                     
             else:
                 raise NameError("Error in char '&' ")
 
         elif self.origin[self.position] == '!':
             self.actual = Token("NOT", '!')
             self.position += 1
-            return
+             
 
         elif self.origin[self.position] == '=':
             self.actual = Token("IGUAL", '=')
@@ -131,7 +130,7 @@ class Tokenizer:
                 if(self.origin[self.position] == '='):
                     self.actual = Token("IGUAL_I", '==')
                     self.position += 1
-            return
+             
         
         elif self.origin[self.position] == ':':
             self.actual = Token("DOIS_P", ':')
@@ -140,19 +139,19 @@ class Tokenizer:
                 if(self.origin[self.position] == ':'):
                     self.actual = Token("DOIS_PP", '::')
                     self.position += 1
-            return
+             
 
         elif self.origin[self.position] == '\n':
             self.actual = Token("BREAK", '\n')
             self.position += 1
-            return
+             
 
         elif self.origin[self.position] == "," :
             self.actual = Token('COMMA', ",")
             self.position += 1
-            return
+             
 
         else:
             raise NameError("Invalid character")
 
-        print(self.actual.value, self.actual.type)
+        #print(self.actual.value, self.actual.type)

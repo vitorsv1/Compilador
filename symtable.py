@@ -35,7 +35,7 @@ class SymbolTable:
         if function in self.functions.keys():
             return self.functions[function]
         else:
-            raise  NameError(f'Function {function} not in functions table')
+            raise  NameError(f'Function {function} not in {self.functions.keys()}')
 
     def setter_function(self, func_symbol, func, typ):
         if (func_symbol not in self.functions.keys() and func_symbol not in self.symbols.keys()):

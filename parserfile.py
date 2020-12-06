@@ -18,7 +18,6 @@ class Parser:
     @staticmethod
     def parseStructBlock():
         result = Statement()
-        Parser.tokens.selectNext()
 
         while(Parser.tokens.actual.type != 'EOF'):
 
@@ -80,7 +79,7 @@ class Parser:
                                 Parser.tokens.selectNext()
 
                                 if(Parser.tokens.actual.type == 'INT' or Parser.tokens.actual.type == 'BOOL' or Parser.tokens.actual.type == 'STRING'):
-                                    functionDeclare._type = Parser.tokens.actual.value
+                                    functionDeclare.typ = Parser.tokens.actual.value
                                     Parser.tokens.selectNext()
 
                                     if(Parser.tokens.actual.type == 'BREAK'):
@@ -248,9 +247,9 @@ class Parser:
                 raise NameError(f'Error on BREAK Token expected - {Parser.tokens.actual.value}')
 
         elif(Parser.tokens.actual.type == 'RETURN'):
-            node = Return()
+            result = Return()
             Parser.tokens.selectNext()
-            node.children[0] = Parser.parseRelExpression()
+            result.children[0] = Parser.parseRelExpression()
         
         elif Parser.tokens.actual.type == "LOCAL":
             Parser.tokens.selectNext()
@@ -342,7 +341,7 @@ class Parser:
             res.children[0] = Parser.parseFactor()
 
         elif Parser.tokens.actual.type == "IDENTIFIER":
-            res = Identifier(Parser.tokens.actual.value)
+            res = Parser.tokens.actual.value
             Parser.tokens.selectNext()
             if(Parser.tokens.actual.type == 'OPEN_P'):
                 result = FunctionCall(res)
@@ -358,6 +357,7 @@ class Parser:
                     raise NameError('No "(" after an open one')
             else:
                 result = Identifier(res)
+            return result
 
         elif Parser.tokens.actual.type == "TRUE" or Parser.tokens.actual.type == "FALSE":
             res = BoolVal(Parser.tokens.actual.value)
@@ -375,6 +375,7 @@ class Parser:
     @staticmethod
     def run(code):
         Parser.tokens = Tokenizer(code)
+        Parser.tokens.selectNext()
         r = Parser.parseStructBlock()
         if Parser.tokens.actual.type == "EOF":
             return r

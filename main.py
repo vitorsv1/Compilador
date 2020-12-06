@@ -8,6 +8,7 @@ def main():
 
     f = open(sys.argv[1], "r")
     code = f.read()
+    f.close()
     code = PrePro().filter(code)
     res = Parser.run(code)
     res.Evaluate(symbomtable)

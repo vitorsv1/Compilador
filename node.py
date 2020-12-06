@@ -169,15 +169,15 @@ class Print(Node):
             else:
                 print("false")
         else:
-            print(res[1])
+            print(res[0])
 
 class Assigment(Node):
     def __init__(self):
         super().__init__(None,[None, None])
     
     def Evaluate(self, symbomtable):
-        c1 = self.children[1].Evaluate(symbomtable)
         symbolType = symbomtable.getter_type(self.children[0].value)
+        c1 = self.children[1].Evaluate(symbomtable)
         if(c1[1] == symbolType):
             symbomtable.setter_symbol(self.children[0].value, c1[0])
         else:
@@ -272,11 +272,11 @@ class FunctionCall(Node):
                 c1Evaluate = self.children[i].Evaluate(symbolTable)
                 value = function[0].children[i][0]
                 typeFunction = function[0].children[i][1]
-                if(typeFunction != c1Evaluate[1]):
-                    raise NameError(f'Argument {typeFunction} type is different then {c1Evaluate[1]}')
-                else:
+                if(typeFunction == c1Evaluate[1]):
                     symbolTableTemp.setter_type(value, typeFunction)
                     symbolTableTemp.setter_symbol(value, c1Evaluate[0])
+                else:
+                    raise NameError(f'Argument {typeFunction} type is different then {c1Evaluate[1]}')
             
             function[0].children[-1].Evaluate(symbolTableTemp)
             returno = symbolTableTemp.getter_return()
