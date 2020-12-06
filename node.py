@@ -61,7 +61,7 @@ class BinOp(Node):
             c1 = self.children[1].Evaluate(symbomtable)
             if c0[0] == "String" or c1[0] == "String":
                 raise NameError(f'Incompatible operation - with {c0[0]} and {c1[0]}')
-            return [c0[1] - c1[1], "Int"]
+            return [c0[0] - c1[0], "Int"]
 
         elif self.value == "+":
             c0 = self.children[0].Evaluate(symbomtable)
@@ -232,7 +232,7 @@ class While(Node):
     
     def Evaluate(self, symbomtable):
         while self.children[0].Evaluate(symbomtable)[0]:
-            self.children[0].Evaluate(symbomtable)
+            self.children[1].Evaluate(symbomtable)
 
 class If(Node):
     def __init__(self):
@@ -250,7 +250,7 @@ class If(Node):
 
 class Else(Node):
     def __init__(self):
-        self.children[None]
+        self.children = [None]
 
     def Evaluate(self, symboltable):
         return self.children[0].Evaluate(symboltable)

@@ -1,13 +1,3 @@
-function soma(x::Int)::Int
-    local a::Int
-    a = x + 1
-    println(a)
-    if a < 5
-        a = soma(a)
-    end
-    return a
+else
+    println( 42 )
 end
-local a::Int
-a = 1
-a = soma(a)
-println(a)

@@ -154,4 +154,4 @@ class Tokenizer:
         else:
             raise NameError("Invalid character")
 
-        #print(self.actual.value, self.actual.type)
+        print(self.actual.value, self.actual.type)
