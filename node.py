@@ -25,14 +25,8 @@ class IntVal(Node):
     def __init__(self,value):
         super().__init__(value, None)
         
-<<<<<<< HEAD
-    def Evaluate(self):
-        #return ["INT", self.value]
-        asm.write_line(f"MOV EBX, {self.value};")
-=======
     def Evaluate(self, symbomtable):
         return [self.value, "Int"]
->>>>>>> vv2.4
 
 class StringVal(Node):
     def __init__(self,value):

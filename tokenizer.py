@@ -30,7 +30,6 @@ class Tokenizer:
                 if self.origin[self.position].isalpha() or self.origin[self.position] == "_":
                    raise NameError('Syntaxe incorrect, Number first then Alpha in variable assignment')
             self.actual = Token("INT", int(tok))
-            #self.position += 1
 
         elif self.origin[self.position].isalpha():
             tok = ""
